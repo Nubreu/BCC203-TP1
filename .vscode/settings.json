@@ -33,5 +33,9 @@
     "**/.vscode",
     "**/.vscode/**"
   ],
-  "C_Cpp_Runner.useAddressSanitizer": false
+  "C_Cpp_Runner.useAddressSanitizer": false,
+  "C_Cpp.dimInactiveRegions": false,
+  "files.associations": {
+    "stdbool.h": "c"
+  }
 }
