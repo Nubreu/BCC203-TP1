@@ -5,10 +5,9 @@
 # include <stdlib.h>
 # include <stdbool.h>
 
-#define MAXCHAVE 1000 - 1
+#define MAXCHAVE 10000
 #define MINCHAVE 0
-#define ITENSPAGINA 10
-
+#define ITENSPAGINA 4
 typedef struct
 {
   int chave;
@@ -25,5 +24,6 @@ typedef struct
 
 bool arquivoTextoExiste(char* caminho);
 bool arquivoBinExiste(char* caminho);
+Registro lerReg(FILE* arqBin);
 
 #endif

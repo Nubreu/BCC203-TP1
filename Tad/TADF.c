@@ -26,3 +26,13 @@ int main(){
   }
   return 0;
 }
+
+Registro lerReg(FILE* arqBin)
+{
+  Registro reg;
+  fread(&reg.chave,sizeof(reg.chave),1,arqBin);
+  fread(&reg.dado1,sizeof(reg.dado1),1,arqBin);
+  fread( reg.dado2,sizeof(reg.dado2),1,arqBin);
+  fread( reg.dado3,sizeof(reg.dado3),1,arqBin);
+  return reg;
+}
