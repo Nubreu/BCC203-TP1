@@ -44,14 +44,15 @@ int pesquisa(Tipoindice tab[], int tam, Tipoitem *item, FILE *arq)
   }
 }
 */
-//             texto gerado    binario lido
-void visualizar(char *nome, char *arquivo)
+
+//                 texto gerado  binario lido
+void visualizarTab(char *nome, char *arquivo)
 {
   FILE *arq;
   arq = fopen(arquivo, "rb");
   FILE *arqTxt;
   arqTxt = fopen(nome, "w");
-  int c, cont;
+  Registro reg;
   if (arq == NULL)
     return;
   if (arqTxt == NULL)
@@ -59,18 +60,11 @@ void visualizar(char *nome, char *arquivo)
     fclose(arq);
     return;
   }
-  cont = 0;
-  while (fread(&c, sizeof(int), 1, arq) == 1)
-  {
-    fprintf(arqTxt, "%d ", c);
-    cont++;
-    if (cont == 2)
-    {
-      fprintf(arqTxt, "\n");
-      cont = 0;
-    }
-  }
 
+  while (fread(&reg.chave, sizeof(int), 1, arq) == 1)
+  {
+    fprintf(arqTxt, "%d\n", reg.chave);
+  }
   fclose(arqTxt);
   fclose(arq);
 }
@@ -78,6 +72,7 @@ void visualizar(char *nome, char *arquivo)
 void gerarTabela(char *tabela, char *bin)
 {
   FILE *arqBin, *arqTabela;
+  Registro reg;
   if ((arqTabela = fopen(tabela, "wb")) == NULL)
     return;
   if ((arqBin = fopen(bin, "rb")) == NULL)
@@ -85,11 +80,11 @@ void gerarTabela(char *tabela, char *bin)
     fclose(arqTabela);
     return;
   }
-  int dado;
-  while (fread(&dado, sizeof(int), 1, arqBin) == 1)
+  
+  while (fread(&reg, sizeof(Registro), 1, arqBin) == 1)
   {
-    fwrite(&dado, sizeof(dado), 1, arqTabela);
-    fseek(arqBin, (ITENSPAGINA - 1) * sizeof(int), SEEK_CUR);
+    fseek(arqBin, (ITENSPAGINA - 1) * sizeof(Registro), SEEK_CUR);
+    fwrite(&reg.chave, sizeof(reg.chave), 1, arqTabela);
   }
 
   fclose(arqBin);
@@ -100,47 +95,46 @@ void gerarTabela(char *tabela, char *bin)
 
 int encontrarPagina(char *caminho, int chaveBusca, int modo)
 {
-  int chaveAtual, chaveProx;
+  int chaveAtual;
   chaveAtual = -1;
-  chaveProx = -1;
   int pos = 0;
   FILE *arq;
 
   if (chaveBusca > MAXCHAVE || chaveBusca < MINCHAVE)
     return -1;
-  /*
-  if(!arquivoBinExiste(caminho))
-    return -1;
-  */
   arq = fopen(caminho, "rb");
   while (fread(&chaveAtual, sizeof(int), 1, arq) == 1)
   {
-    if (chaveAtual == chaveBusca)
+    if (chaveAtual == chaveBusca){
       return pos;
+      fclose(arq);
+    }
      
     if (modo != 3)
     {
-      if ((chaveAtual > chaveBusca) && modo == 1)
+      if ((chaveAtual > chaveBusca) || ((chaveAtual + ITENSPAGINA) >= MAXCHAVE) && modo == 1)
       {
-        return --pos;
+        return pos;fclose(arq);
       }
-      if ((chaveAtual < chaveBusca) && modo == 2)
-        return pos;
+      if ((chaveAtual > chaveBusca) || (pos == MAXCHAVE) && modo == 2){
+        return --pos; fclose(arq);
+      }
     }
     pos++;
   }
+  fclose(arq);
   return pos;
 }
 
 void imprimirPagina(char* caminho, int desloc)
 {
   FILE* arq = fopen(caminho,"rb");
-  fseek(arq, desloc * (ITENSPAGINA * sizeof(int)),SEEK_SET);
-  int var;
+  Registro reg;
+  fseek(arq, desloc * (ITENSPAGINA * sizeof(Registro)),SEEK_SET);
   for(int i = 0; i < ITENSPAGINA; i++)
   {
-    fread(&var,sizeof(int),1,arq);
-    printf("%d ",var);
+    fread(&reg,sizeof(Registro),1,arq);
+    printf("%d ",reg.chave);
   }
   printf("\n");
   fclose(arq);
@@ -149,9 +143,8 @@ void imprimirPagina(char* caminho, int desloc)
 int main()
 {
   gerarTabela("tabelas/tabelaCrescente.bin", "../dados/crescente.bin");
-  visualizar("tabelas/tabelaCrescente.txt", "tabelas/tabelaCrescente.bin");
   int desloc;
-  desloc = encontrarPagina("tabelas/tabelaCrescente.bin", 20, 1);
+  desloc = encontrarPagina("tabelas/tabelaCrescente.bin", MAXCHAVE, 1);
   printf("Pag: %d \n\n", desloc);
   imprimirPagina("../dados/crescente.bin",desloc);
   return 0;

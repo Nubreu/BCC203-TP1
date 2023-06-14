@@ -3,33 +3,37 @@
 #include <stdlib.h>
 #include "../Tad/TADF.h"
 
-
-//#define MAXCHAVE 8333333
-
 int crescente()
 {
   FILE *arq;
+  Registro reg;
   arq = fopen("crescente.bin", "wb");
   if (arq == NULL)
     return 0;
 
-  for (long i = 0; i < MAXCHAVE; i++)
+  for (int i = 0; i <= MAXCHAVE; i++)
   {
-    fwrite(&i, 1, sizeof(int), arq);
+    reg.chave = i;
+    fwrite(&reg,1,sizeof(Registro),arq);
   }
   fclose(arq);
   return 1;
 }
+
+
 int decrescente()
 {
   FILE *arq;
+  Registro reg;
+  
   arq = fopen("decrescente.bin", "wb");
   if (arq == NULL)
     return 0;
 
-  for (long i = MAXCHAVE - 1; i != -1; i--)
+  for (int i = MAXCHAVE - 1; i != -1; i--)
   {
-    fwrite(&i, 1, sizeof(int), arq);
+    reg.chave = i;
+    fwrite(&reg,1,sizeof(Registro),arq);
   }
   fclose(arq);
   return 1;
@@ -37,25 +41,29 @@ int decrescente()
 int aleatorio()
 {
   FILE *arq;
-  long aleatorio;
+  int chave;
+  Registro reg;
   srand(time(NULL));
   arq = fopen("aleatorio.bin", "wb");
   if (arq == NULL)
     return 0;
 
-  for (long i = 0; i < MAXCHAVE; i++)
+  for (int i = 0; i < MAXCHAVE; i++)
   {
-    aleatorio = rand() % (MAXCHAVE - 1);
-    fwrite(&aleatorio, 1, sizeof(int), arq);
+    chave = rand() % (MAXCHAVE - 1);
+    reg.chave = chave;
+    fwrite(&reg,1,sizeof(Registro),arq);
   }
   fclose(arq);
   return 1;
 }
-void visualizar(char *nome, char* arquivo)
+
+void visualizarBin(char *nome, char* arquivo)
 {
   FILE *arq;
   arq = fopen(arquivo, "rb");
   FILE *arqTxt;
+  Registro reg;
   arqTxt = fopen(nome, "w");
   int c, cont;
   if (arq == NULL)
@@ -66,14 +74,9 @@ void visualizar(char *nome, char* arquivo)
     return;
   }
   cont = 0;
-  while (fread(&c, sizeof(int),1, arq) == 1)
+  while (fread(&reg, sizeof(Registro),1, arq) == 1)
   {
-    fprintf(arqTxt, "%d ", c);
-    cont++;
-    if (cont == 10){
-      fprintf(arqTxt, "\n");
-      cont = 0;
-    }
+    fprintf(arqTxt, "%d\n", reg.chave);
   }
 
   fclose(arqTxt);
@@ -82,16 +85,12 @@ void visualizar(char *nome, char* arquivo)
 
 int main()
 {
-  FILE *arq;
-  int c;
-  int cont = 0;
-  
   if(crescente() != 1)
   {
     printf("[X] ERRO NO ARQUIVO CRESCENTE\n");
   }
   else printf("-- CRESCENTE COCLUIDO COM SUCESSO\n");
-
+  /*
   if(decrescente() != 1)
   {
     printf("[X] ERRO NO ARQUIVO DECRESCENTE\n");
@@ -103,14 +102,11 @@ int main()
     printf("[X] ERRO NO ARQUIVO ALEATORIO\n");
   }
   else printf("-- ALEATORIO COCLUIDO COM SUCESSO\n");
+  */
   
-  
-  arq = fopen("aleatorio.bin","rb");
+  visualizarBin("crescente.txt","crescente.bin");
+  //visualizarBin("decrescente.txt","decrescente.bin");
+  //visualizarBin("aleatorio.txt","aleatorio.bin");
 
-  visualizar("aleatorio.txt","aleatorio.bin");
-  visualizar("crescente.txt","crescente.bin");
-  visualizar("decrescente.txt","decrescente.bin");
-
-  fclose(arq);
   return 0;
 }
