@@ -1,11 +1,12 @@
 #ifndef TADF_H
 #define TADF_H
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-#define MAXCHAVE 10000
+//#define MAXCHAVE 10000000
+#define MAXCHAVE 100000
 #define MINCHAVE 0
 #define ITENSPAGINA 4
 typedef struct
@@ -14,16 +15,19 @@ typedef struct
   long int dado1;
   char dado2[1000];
   char dado3[5000];
-}Registro;
+} Registro;
 
 typedef struct
 {
   int tam;
   int item[ITENSPAGINA];
-}Pagina;
+} Pagina;
 
-bool arquivoTextoExiste(char* caminho);
-bool arquivoBinExiste(char* caminho);
-Registro lerReg(FILE* arqBin);
+typedef struct
+{
+  Registro reg;
+  int nDir;
+  int nEsq;
+} Node;
 
 #endif
