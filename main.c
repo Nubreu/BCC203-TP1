@@ -2,10 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ASI/asindexado.h"
-//#include "Registro.h"
-
+#include "Tad/TADF.h"
 #define ARQUIVO "../registros.bin"
-/*
+
 int main(int argc, char *argv[]) {
     int metodo, quantidade, situacao, chave, mostrar_pesquisa = 0;
     if (argc < 5 || argc > 6) {
@@ -30,4 +29,3 @@ int main(int argc, char *argv[]) {
     }
     return 0;
 }
-*/
